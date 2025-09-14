@@ -1,11 +1,12 @@
-import time  # we will use it to get unix timestamp
 import os  # we will use it to expand user path
+import re
 import shutil  # we will use it to copy files
+import time  # we will use it to get unix timestamp
 
 # config file paths
-current_unix_timestamp = str(time.time())
 default_config_file = '~/.config/kitty/kitty.conf'
 current_backup_file = f'~/.config/kitty/kitty.conf.{current_unix_timestamp}.bak'
+current_unix_timestamp = int(time.time())
 default_config_file_full_path = os.path.expanduser(default_config_file)
 current_backup_file_full_path = os.path.expanduser(current_backup_file)
 
@@ -26,14 +27,9 @@ with open(default_config_file_full_path) as f:
 # for each line search mapping line and add additional line with mapping
 new_lines = []
 for line in lines:
-
-    # if line doesn't contain map
-    if ' map ' not in line:
-        new_lines.append(line)
-        continue
-
-    # if line contains map but starts with #::
-    if line.startswith('#::'):
+    # If the line doesn't start with «# map» or «map», don't change it.
+    match = re.match(r"^#? ?map ", line)
+    if not match:
         new_lines.append(line)
         continue
 
@@ -50,6 +46,11 @@ for line in lines:
             new_keys_list.append(key)
             continue
         new_keys_list.append(map_dict[key])
+
+    # If there was no substitute, ignore it.
+    if keys_list == new_keys_list:
+        new_lines.append(line)
+        continue
 
     # create new line with new keys list
     new_keys_part = '+'.join(new_keys_list)
