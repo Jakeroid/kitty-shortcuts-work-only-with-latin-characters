@@ -4,9 +4,9 @@ import shutil  # we will use it to copy files
 import time  # we will use it to get unix timestamp
 
 # config file paths
+current_unix_timestamp = int(time.time())
 default_config_file = '~/.config/kitty/kitty.conf'
 current_backup_file = f'~/.config/kitty/kitty.conf.{current_unix_timestamp}.bak'
-current_unix_timestamp = int(time.time())
 default_config_file_full_path = os.path.expanduser(default_config_file)
 current_backup_file_full_path = os.path.expanduser(current_backup_file)
 
